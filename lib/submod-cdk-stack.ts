@@ -1,19 +1,29 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { Construct } from 'constructs';
+import { Duration, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import * as cognito from "aws-cdk-lib/aws-cognito";
+import { Construct } from "constructs";
 
 export class SubmodCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const queue = new sqs.Queue(this, 'SubmodCdkQueue', {
-      visibilityTimeout: Duration.seconds(300)
+    // user pool
+    const userPool = new cognito.UserPool(this, "userPool", {
+      selfSignUpEnabled: true,
+      signInAliases: {
+        username: true,
+        email: true,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    const topic = new sns.Topic(this, 'SubmodCdkTopic');
-
-    topic.addSubscription(new subs.SqsSubscription(queue));
+    // user pool client
+    const userPoolClient = new cognito.UserPoolClient(this, "userPoolClient", {
+      userPool,
+      authFlows: {
+        userPassword: true,
+        userSrp: true,
+        adminUserPassword: true,
+      },
+    });
   }
 }

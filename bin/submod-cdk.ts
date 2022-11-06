@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
-import { SubmodCdkStack } from '../lib/submod-cdk-stack';
+import * as cdk from "aws-cdk-lib";
+import { SubmodCdkStack } from "../lib/submod-cdk-stack";
 
 const app = new cdk.App();
-new SubmodCdkStack(app, 'SubmodCdkStack');
+const stack = new SubmodCdkStack(app, "SubmodCdkStack");
+cdk.Tags.of(stack).add("project", "submod-cdk");
